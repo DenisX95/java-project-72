@@ -28,7 +28,7 @@ checkstyle {
 
 sonar {
     properties {
-        property("sonar.projectKey", "DenisX95_java-project-78")
+        property("sonar.projectKey", "DenisX95_java-project-72")
         property("sonar.organization", "denisx95")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
