@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("application")
     id ("io.freefair.lombok") version "8.6"
     id("checkstyle")
     id("jacoco")
@@ -18,6 +19,12 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:$assertjVersion")
+    implementation("io.javalin:javalin:6.1.3")
+    implementation("org.slf4j:slf4j-simple:2.0.13")
+}
+
+application {
+    mainClass.set("hexlet.code.App") // Указываем точку входа
 }
 
 checkstyle {
