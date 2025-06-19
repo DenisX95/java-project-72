@@ -1,7 +1,5 @@
-FROM eclipse-temurin:17-jdk
+FROM gradle:7.4.0-jdk17
 WORKDIR /app
-COPY /app .
-RUN chmod +x ./gradlew
-RUN ./gradlew build
-EXPOSE 7070
-CMD ["./gradlew", "run"]
+COPY app/ .
+RUN gradle installDist
+CMD ["./build/install/app/bin/app"]
