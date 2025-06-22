@@ -20,7 +20,7 @@ public class App {
     }
 
     private static String getJdbcUrl() {
-        return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1");
+        return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;MODE=PostgreSQL;DB_CLOSE_DELAY=-1");
     }
 
     private static String readResourceFile(String fileName) throws IOException {
