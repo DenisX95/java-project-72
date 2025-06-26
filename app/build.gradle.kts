@@ -1,6 +1,15 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
+val javalinVersion = "6.6.0"
+val jteVersion = "3.2.0"
+val slf4jVersion = "2.0.13"
+val h2Version = "2.3.232"
+val hikariVersion = "6.3.0"
+val postgresVersion = "42.7.3"
+val assertjVersion = "3.27.3"
+val logbackVersion = "1.4.11"
+
 plugins {
     id("java")
     id("application")
@@ -12,24 +21,25 @@ plugins {
 
 group = "hexlet.code"
 version = "1.0-SNAPSHOT"
-val assertjVersion = "3.24.2"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("com.h2database:h2:2.3.232")
-    implementation("com.zaxxer:HikariCP:6.3.0")
-    implementation("org.postgresql:postgresql:42.7.3")
+    implementation("com.h2database:h2:$h2Version")
+    implementation("com.zaxxer:HikariCP:$hikariVersion")
+    implementation("org.postgresql:postgresql:$postgresVersion")
 
-    implementation("gg.jte:jte:3.2.0")
-    implementation("io.javalin:javalin:6.6.0")
-    implementation("io.javalin:javalin-bundle:6.6.0")
-    implementation("io.javalin:javalin-rendering:6.6.0")
-    implementation("org.slf4j:slf4j-simple:2.0.13")
+    implementation("gg.jte:jte:$jteVersion")
+    implementation("io.javalin:javalin:$javalinVersion")
+    implementation("io.javalin:javalin-bundle:$javalinVersion")
+    implementation("io.javalin:javalin-rendering:$javalinVersion")
+    // implementation("org.slf4j:slf4j-simple:2.0.13")
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-    testImplementation("org.assertj:assertj-core:3.27.3")
+    testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -51,30 +61,5 @@ sonar {
         property("sonar.organization", "denisx95")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
-    }
-}
-
-tasks.test {
-    useJUnitPlatform()
-    testLogging {
-        exceptionFormat = TestExceptionFormat.FULL
-        events = mutableSetOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
-        // showStackTraces = true
-        // showCauses = true
-        showStandardStreams = true
-    }
-}
-
-tasks.withType<Checkstyle>().configureEach {
-    reports {
-        xml.required.set(true)
-    }
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-
-    reports {
-        xml.required.set(true)
     }
 }
