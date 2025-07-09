@@ -42,6 +42,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("com.konghq:unirest-java:3.14.5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -61,5 +62,14 @@ sonar {
         property("sonar.organization", "denisx95")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
     }
 }

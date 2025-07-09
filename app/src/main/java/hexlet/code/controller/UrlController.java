@@ -18,7 +18,7 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 
 public class UrlController {
 
-    private static final Logger takeLog = LoggerFactory.getLogger(UrlController.class);
+    private static final Logger TAKE_LOG = LoggerFactory.getLogger(UrlController.class);
 
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
