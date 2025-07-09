@@ -9,6 +9,7 @@ val hikariVersion = "6.3.0"
 val postgresVersion = "42.7.3"
 val assertjVersion = "3.27.3"
 val logbackVersion = "1.4.11"
+val kongVersion = "3.14.5"
 
 plugins {
     id("java")
@@ -42,7 +43,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("com.konghq:unirest-java:3.14.5")
+    testImplementation("com.konghq:unirest-java:$kongVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -67,9 +68,19 @@ sonar {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         showStandardStreams = true
+    }
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // генерируется только после тестов
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
     }
 }

@@ -17,4 +17,8 @@ public class NamedRoutes {
     public static String urlPath(String id) {
         return "/urls/" + id;
     }
+
+    private NamedRoutes() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 }

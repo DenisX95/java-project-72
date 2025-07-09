@@ -12,4 +12,8 @@ public class MainController {
         page.setFlashType(ctx.consumeSessionAttribute("flashType"));
         ctx.render("index.jte", model("page", page));
     }
+
+    private MainController() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 }

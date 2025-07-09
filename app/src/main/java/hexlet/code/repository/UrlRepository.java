@@ -33,7 +33,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static Optional<Url> find(Long id) throws SQLException {
-        var sql = "SELECT * FROM urls WHERE id = ?";
+        var sql = "SELECT name, created_at FROM urls WHERE id = ?";
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, id);
@@ -50,7 +50,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static boolean isExist(String name) throws SQLException {
-        var sql = "SELECT * FROM urls WHERE name = ?";
+        var sql = "SELECT id FROM urls WHERE name = ?";
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
@@ -60,7 +60,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<Url> getEntities() throws SQLException {
-        var sql = "SELECT * FROM urls";
+        var sql = "SELECT id, name, created_at FROM urls";
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql)) {
             var resultSet = stmt.executeQuery();

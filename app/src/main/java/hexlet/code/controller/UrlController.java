@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 public class UrlController {
-
     private static final Logger TAKE_LOG = LoggerFactory.getLogger(UrlController.class);
 
     public static void index(Context ctx) throws SQLException {
@@ -74,5 +73,9 @@ public class UrlController {
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
         var page = new UrlPage(url);
         ctx.render("urls/show.jte", model("page", page));
+    }
+
+    private UrlController() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 }
