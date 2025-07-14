@@ -6,38 +6,40 @@
 @template.layout.page(
 page = page,
 content = @`
-    <section>
-        <div class="container-lg mt-5">
-            <h1>Сайты</h1>
+    <section class="py-5 bg-light">
+        <div class="container-xl">
+            <div class="bg-white rounded-4 shadow p-4">
+                <h1 class="mb-4">Сайты</h1>
 
-            <table class="table table-bordered table-hover mt-3">
-                <thead>
-                    <tr>
-                        <th class="col-1">ID</th>
-                        <th>Имя</th>
-                        <th class="col-2">Последняя проверка</th>
-                        <th class="col-1">Код ответа</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for(var url : page.getUrls())
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td>
-                                ${url.getId()}
-                            </td>
-                            <td>
-                                <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
-                            </td>
-                            <td>
-                                ${url.getLastCheck() != null ? DateFormatter.formatDate(url.getLastCheck()) : ""}
-                            </td>
-                            <td>
-                                ${url.getLastStatusCode() != null ? String.valueOf(url.getLastStatusCode()) : ""}
-                            </td>
+                            <th scope="col" class="col-1">ID</th>
+                            <th scope="col">Имя</th>
+                            <th scope="col" class="col-2">Последняя проверка</th>
+                            <th scope="col" class="col-1">Код ответа</th>
                         </tr>
-                    @endfor
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @for(var url : page.getUrls())
+                            <tr>
+                                <td>
+                                    ${url.getId()}
+                                </td>
+                                <td>
+                                    <a href="${NamedRoutes.urlPath(url.getId())}" class="text-decoration-none fw-semibold">${url.getName()}</a>
+                                </td>
+                                <td class="text-muted small">
+                                    ${url.getLastCheck() != null ? DateFormatter.formatDate(url.getLastCheck()) : ""}
+                                </td>
+                                <td class="text-muted small">
+                                    ${url.getLastStatusCode() != null ? String.valueOf(url.getLastStatusCode()) : ""}
+                                </td>
+                            </tr>
+                        @endfor
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 `
