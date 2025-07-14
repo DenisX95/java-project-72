@@ -12,6 +12,7 @@ import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -41,9 +42,12 @@ public final class UrlController {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flashType", "warning");
                 ctx.redirect(NamedRoutes.urlsPath());
+
             } else {
-                var newUrl = new Url(baseUrl);
+                var createdAt = LocalDateTime.now();
+                var newUrl = new Url(baseUrl, createdAt);
                 UrlRepository.save(newUrl);
+
                 ctx.sessionAttribute("flash", "Страница успешно добавлена");
                 ctx.sessionAttribute("flashType", "success");
                 ctx.redirect(NamedRoutes.urlsPath());

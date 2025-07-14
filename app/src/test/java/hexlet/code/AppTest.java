@@ -51,9 +51,8 @@ final class AppTest {
 
     @Test
     void listUrls() throws SQLException {
-        System.out.println("Запускается createUrl");
-        UrlRepository.save(new Url("https://ru.hexlet.io"));
-        UrlRepository.save(new Url("https://github.com"));
+        Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", "https://ru.hexlet.io/").asEmpty();
+        Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", "https://github.com/").asEmpty();
 
         HttpResponse<String> response = Unirest.get(baseUrl + NamedRoutes.urlsPath()).asString();
         assertThat(response.getStatus()).isEqualTo(200);
@@ -63,8 +62,8 @@ final class AppTest {
 
     @Test
     void showUrl() throws SQLException {
-        UrlRepository.save(new Url("https://ru.hexlet.io"));
-        UrlRepository.save(new Url("https://github.com"));
+        Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", "https://ru.hexlet.io/").asEmpty();
+        Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", "https://github.com/").asEmpty();
 
         var id = UrlRepository.getEntities().get(1).getId();
         HttpResponse<String> response = Unirest.get(baseUrl + NamedRoutes.urlPath(id)).asString();
@@ -101,8 +100,7 @@ final class AppTest {
 
     @Test
     void createDuplicateUrl() throws SQLException {
-        UrlRepository.save(new Url("https://github.com"));
-
+        Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", "https://github.com/").asEmpty();
         HttpResponse<?> response = Unirest.post(baseUrl + NamedRoutes.urlsPath())
                 .field("url", "https://github.com/")
                 .asEmpty();
@@ -113,7 +111,7 @@ final class AppTest {
     }
 
     @Test
-    void checkUrl() throws Exception {
+    void checkUrlIsOK() throws Exception {
         try (MockWebServer server = new MockWebServer()) {
             String mockHtml = """
                     <html>
@@ -136,8 +134,8 @@ final class AppTest {
             server.start();
 
             var mockUrl = server.url("/").toString();
-            UrlRepository.save(new Url(mockUrl));
-            var urlId = UrlRepository.getEntities().get(0).getId();
+            Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", mockUrl).asEmpty();
+            var urlId = UrlRepository.getEntities().getFirst().getId();
 
             HttpResponse<?> response = Unirest.post(baseUrl + NamedRoutes.urlCheckPath(urlId)).asEmpty();
             assertThat(response.getStatus()).isEqualTo(302);
@@ -148,11 +146,52 @@ final class AppTest {
             var checks = UrlCheckRepository.find(urlId);
             assertThat(checks).hasSize(1);
 
-            var check = checks.get(0);
+            var check = checks.getFirst();
             assertThat(check.getStatusCode()).isEqualTo(200);
             assertThat(check.getTitle()).isEqualTo("Mock Page");
             assertThat(check.getH1()).isEqualTo("Mock H1 title");
             assertThat(check.getDescription()).isEqualTo("Mock description");
+        }
+    }
+
+    @Test
+    void checkUrlIsForbidden() throws Exception {
+        try (MockWebServer server = new MockWebServer()) {
+            String mockHtml = """
+                    <html>
+                        <head>
+                            <title>Just a moment...</title>
+                        </head>
+                        <body>
+                        </body>
+                    </html>
+                    """;
+
+            server.enqueue(new MockResponse()
+                    .setBody(mockHtml)
+                    .setResponseCode(403)
+                    .addHeader("Content-Type", "text/html"));
+
+            server.start();
+
+            var mockUrl = server.url("/").toString();
+            Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", mockUrl).asEmpty();
+            var urlId = UrlRepository.getEntities().getFirst().getId();
+
+            HttpResponse<?> response = Unirest.post(baseUrl + NamedRoutes.urlCheckPath(urlId)).asEmpty();
+            assertThat(response.getStatus()).isEqualTo(302);
+
+            HttpResponse<String> redirected = Unirest.get(baseUrl + NamedRoutes.urlPath(urlId)).asString();
+            assertThat(redirected.getBody()).contains("Страница успешно проверена");
+
+            var checks = UrlCheckRepository.find(urlId);
+            assertThat(checks).hasSize(1);
+
+            var check = checks.getFirst();
+            assertThat(check.getStatusCode()).isEqualTo(403);
+            assertThat(check.getTitle()).isEqualTo("Just a moment...");
+            assertThat(check.getH1()).isEqualTo("");
+            assertThat(check.getDescription()).isEqualTo("");
         }
     }
 }

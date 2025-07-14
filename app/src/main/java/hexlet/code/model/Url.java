@@ -13,8 +13,9 @@ public class Url {
     private LocalDateTime lastCheck;
     private Integer lastStatusCode;
 
-    public Url(String name) {
+    public Url(String name, LocalDateTime createdAt) {
         this.name = name;
+        this.createdAt = createdAt;
     }
 
     public Url(Long id, String name, LocalDateTime createdAt) {
