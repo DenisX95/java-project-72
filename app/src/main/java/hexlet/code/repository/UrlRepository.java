@@ -33,7 +33,8 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static Optional<Url> find(Long id) throws SQLException {
-        var sql = "SELECT name, created_at FROM urls WHERE id = ?";
+        var sql = "SELECT id, name, created_at FROM urls WHERE id = ?";
+
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, id);
@@ -41,8 +42,8 @@ public class UrlRepository extends BaseRepository {
             if (resultSet.next()) {
                 var name = resultSet.getString("name");
                 var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
-                var url = new Url(name, createdAt);
-                url.setId(id);
+
+                var url = new Url(id, name, createdAt);
                 return Optional.of(url);
             }
             return Optional.empty();
@@ -60,7 +61,18 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<Url> getEntities() throws SQLException {
-        var sql = "SELECT id, name, created_at FROM urls";
+        var sql = "SELECT "
+                    + "u.id AS id, "
+                    + "u.name AS name, "
+                    + "uc.status_code AS last_status_code, "
+                    + "uc.created_at AS last_check "
+                + "FROM urls u "
+                + "LEFT JOIN url_checks uc "
+                    + "ON uc.id = ( "
+                        + "SELECT MAX(id) "
+                        + "FROM url_checks "
+                        + "WHERE url_checks.url_id = u.id)";
+
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql)) {
             var resultSet = stmt.executeQuery();
@@ -68,9 +80,13 @@ public class UrlRepository extends BaseRepository {
             while (resultSet.next()) {
                 var id = resultSet.getLong("id");
                 var name = resultSet.getString("name");
-                var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
-                var url = new Url(name, createdAt);
-                url.setId(id);
+
+                Timestamp lastCheckRaw = resultSet.getTimestamp("last_check");
+                LocalDateTime lastCheck = lastCheckRaw != null ? lastCheckRaw.toLocalDateTime() : null;
+
+                var lastStatusCode = resultSet.getObject("last_status_code", Integer.class);
+
+                var url = new Url(id, name, lastCheck, lastStatusCode);
                 result.add(url);
             }
             return result;

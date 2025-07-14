@@ -1,5 +1,6 @@
 @import hexlet.code.dto.UrlPage
 @import hexlet.code.util.DateFormatter
+@import hexlet.code.util.NamedRoutes
 @param UrlPage page
 
 @template.layout.page(
@@ -27,7 +28,7 @@ content = @`
             </table>
 
             <h2 class="mt-5">Проверки</h2>
-            <form method="post" action="#">
+            <form method="post" action="${NamedRoutes.urlCheckPath(page.getUrl().getId())}">
                 <button type="submit" class="btn btn-primary">Запустить проверку</button>
             </form>
 
@@ -41,7 +42,28 @@ content = @`
                     <th class="col-2">Дата проверки</th>
                 </thead>
                 <tbody>
-
+                    @for(var check : page.getChecks())
+                        <tr>
+                            <td>
+                                ${check.getId()}
+                            </td>
+                            <td>
+                                ${check.getStatusCode()}
+                            </td>
+                            <td>
+                                ${check.getTitle()}
+                            </td>
+                            <td>
+                                ${check.getH1()}
+                            </td>
+                            <td>
+                                ${check.getDescription()}
+                            </td>
+                            <td>
+                                ${DateFormatter.formatDate(check.getCreatedAt())}
+                            </td>
+                        </tr>
+                    @endfor
                 </tbody>
             </table>
         </div>

@@ -1,4 +1,5 @@
 @import hexlet.code.dto.UrlsPage
+@import hexlet.code.util.DateFormatter
 @import hexlet.code.util.NamedRoutes
 @param UrlsPage page
 
@@ -28,10 +29,10 @@ content = @`
                                 <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                             </td>
                             <td>
-                                none
+                                ${url.getLastCheck() != null ? DateFormatter.formatDate(url.getLastCheck()) : ""}
                             </td>
                             <td>
-                                none
+                                ${url.getLastStatusCode() != null ? String.valueOf(url.getLastStatusCode()) : ""}
                             </td>
                         </tr>
                     @endfor

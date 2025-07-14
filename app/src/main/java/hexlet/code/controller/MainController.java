@@ -5,7 +5,7 @@ import io.javalin.http.Context;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
-public class MainController {
+public final class MainController {
     public static void index(Context ctx) {
         var page = new BasePage();
         page.setFlash(ctx.consumeSessionAttribute("flash"));

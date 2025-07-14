@@ -1,9 +1,12 @@
 package hexlet.code;
 
 import hexlet.code.model.Url;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +66,7 @@ public final class AppTest {
         UrlRepository.save(new Url("https://ru.hexlet.io"));
         UrlRepository.save(new Url("https://github.com"));
 
-        long id = UrlRepository.getEntities().get(1).getId();
+        var id = UrlRepository.getEntities().get(1).getId();
         HttpResponse<String> response = Unirest.get(baseUrl + NamedRoutes.urlPath(id)).asString();
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody()).contains("https://github.com");
@@ -109,4 +112,47 @@ public final class AppTest {
         assertThat(redirected.getBody()).contains("Страница уже существует");
     }
 
+    @Test
+    void checkUrl() throws Exception {
+        try (MockWebServer server = new MockWebServer()) {
+            String mockHtml = """
+                    <html>
+                        <head>
+                            <title>Mock Page</title>
+                            <meta name="description" content="Mock description">
+                        </head>
+                        <body>
+                            <h1>Mock H1 title</h1>
+                            <div>Another Mock Contents</div>
+                        </body>
+                    </html>
+                    """;
+
+            server.enqueue(new MockResponse()
+                    .setBody(mockHtml)
+                    .setResponseCode(200)
+                    .addHeader("Content-Type", "text/html"));
+
+            server.start();
+
+            var mockUrl = server.url("/").toString();
+            UrlRepository.save(new Url(mockUrl));
+            var urlId = UrlRepository.getEntities().get(0).getId();
+
+            HttpResponse<?> response = Unirest.post(baseUrl + NamedRoutes.urlCheckPath(urlId)).asEmpty();
+            assertThat(response.getStatus()).isEqualTo(302);
+
+            HttpResponse<String> redirected = Unirest.get(baseUrl + NamedRoutes.urlPath(urlId)).asString();
+            assertThat(redirected.getBody()).contains("Страница успешно проверена");
+
+            var checks = UrlCheckRepository.find(urlId);
+            assertThat(checks).hasSize(1);
+
+            var check = checks.get(0);
+            assertThat(check.getStatusCode()).isEqualTo(200);
+            assertThat(check.getTitle()).isEqualTo("Mock Page");
+            assertThat(check.getH1()).isEqualTo("Mock H1 title");
+            assertThat(check.getDescription()).isEqualTo("Mock description");
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package hexlet.code.controller;
 
+import hexlet.code.repository.UrlCheckRepository;
+import hexlet.code.service.UrlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,12 +13,11 @@ import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
-import java.net.URI;
 import java.sql.SQLException;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
-public class UrlController {
+public final class UrlController {
     private static final Logger TAKE_LOG = LoggerFactory.getLogger(UrlController.class);
 
     public static void index(Context ctx) throws SQLException {
@@ -38,15 +39,7 @@ public class UrlController {
         }
 
         try {
-            var uri = new URI(inputUrl).normalize();
-            var url = uri.toURL();
-
-            var protocol = url.getProtocol();
-            var host = url.getHost();
-            var port = url.getPort();
-            var baseUrl = (port == -1)
-                    ? String.format("%s://%s", protocol, host)
-                    : String.format("%s://%s:%d", protocol, host, port);
+            var baseUrl = UrlService.createBaseUrl(inputUrl);
 
             if (UrlRepository.isExist(baseUrl)) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
@@ -71,7 +64,12 @@ public class UrlController {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
-        var page = new UrlPage(url);
+
+        var checks = UrlCheckRepository.find(id);
+        var page = new UrlPage(url, checks);
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setFlashType(ctx.consumeSessionAttribute("flashType"));
+
         ctx.render("urls/show.jte", model("page", page));
     }
 
