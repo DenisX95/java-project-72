@@ -1,9 +1,7 @@
 package hexlet.code;
 
-import hexlet.code.model.Url;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
-import hexlet.code.service.UrlCheckService;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import okhttp3.mockwebserver.MockResponse;
@@ -18,8 +16,6 @@ import kong.unirest.HttpResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -99,6 +95,14 @@ final class AppTest {
         assertThat(response.getStatus()).isEqualTo(302);
 
         HttpResponse<String> redirected = Unirest.get(baseUrl + NamedRoutes.urlsPath()).asString();
+        assertThat(redirected.getBody()).contains("Некорректный URL");
+
+        response = Unirest.post(baseUrl + NamedRoutes.urlsPath())
+                .field("url", "")
+                .asEmpty();
+        assertThat(response.getStatus()).isEqualTo(302);
+
+        redirected = Unirest.get(baseUrl + NamedRoutes.urlsPath()).asString();
         assertThat(redirected.getBody()).contains("Некорректный URL");
     }
 

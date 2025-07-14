@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class UrlCheckRepository extends BaseRepository {
     public static void save(UrlCheck check) throws SQLException {
@@ -63,46 +62,6 @@ public class UrlCheckRepository extends BaseRepository {
             }
 
             return checksList;
-        }
-    }
-
-    public static Optional<LocalDateTime> getLastCheckedAt(Long urlId) throws SQLException {
-        var sql = "SELECT created_at "
-                + "FROM url_checks "
-                + "WHERE url_id = ? "
-                + "ORDER BY id DESC "
-                + "LIMIT 1";
-
-        try (var conn = dataSource.getConnection();
-             var stmt = conn.prepareStatement(sql)) {
-            stmt.setLong(1, urlId);
-            var resultSet = stmt.executeQuery();
-
-            if (resultSet.next()) {
-                return Optional.of(resultSet.getTimestamp("created_at").toLocalDateTime());
-            }
-
-            return Optional.empty();
-        }
-    }
-
-    public static Optional<Integer> getLastStatusCode(Long urlId) throws SQLException {
-        var sql = "SELECT status_code "
-                + "FROM url_checks "
-                + "WHERE url_id = ? "
-                + "ORDER BY id DESC "
-                + "LIMIT 1";
-
-        try (var conn = dataSource.getConnection();
-             var stmt = conn.prepareStatement(sql)) {
-            stmt.setLong(1, urlId);
-            var resultSet = stmt.executeQuery();
-
-            if (resultSet.next()) {
-                return Optional.of(resultSet.getInt("status_code"));
-            }
-
-            return Optional.empty();
         }
     }
 }
