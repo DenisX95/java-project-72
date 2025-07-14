@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class UrlService {
+public final class UrlService {
     public static String createBaseUrl(String urlAddress) throws URISyntaxException, MalformedURLException {
         var uri = new URI(urlAddress).normalize();
         var url = uri.toURL();

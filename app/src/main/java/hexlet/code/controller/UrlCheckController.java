@@ -10,7 +10,7 @@ import io.javalin.http.NotFoundResponse;
 
 import java.sql.SQLException;
 
-public class UrlCheckController {
+public final class UrlCheckController {
 
     public static void check(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).get();

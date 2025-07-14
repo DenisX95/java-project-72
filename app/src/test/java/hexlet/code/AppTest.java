@@ -3,6 +3,7 @@ package hexlet.code;
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
+import hexlet.code.service.UrlCheckService;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import okhttp3.mockwebserver.MockResponse;
@@ -15,7 +16,10 @@ import org.junit.jupiter.api.Test;
 import kong.unirest.Unirest;
 import kong.unirest.HttpResponse;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +54,7 @@ final class AppTest {
     }
 
     @Test
-    void listUrls() throws SQLException {
+    void listUrls() {
         Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", "https://ru.hexlet.io/").asEmpty();
         Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", "https://github.com/").asEmpty();
 
@@ -99,7 +103,7 @@ final class AppTest {
     }
 
     @Test
-    void createDuplicateUrl() throws SQLException {
+    void createDuplicateUrl() {
         Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", "https://github.com/").asEmpty();
         HttpResponse<?> response = Unirest.post(baseUrl + NamedRoutes.urlsPath())
                 .field("url", "https://github.com/")
@@ -155,21 +159,13 @@ final class AppTest {
     }
 
     @Test
-    void checkUrlIsForbidden() throws Exception {
+    void checkUrlIsNotFound() throws Exception {
         try (MockWebServer server = new MockWebServer()) {
-            String mockHtml = """
-                    <html>
-                        <head>
-                            <title>Just a moment...</title>
-                        </head>
-                        <body>
-                        </body>
-                    </html>
-                    """;
+            String mockHtml = "<html><body>Not Found</body></html>";
 
             server.enqueue(new MockResponse()
                     .setBody(mockHtml)
-                    .setResponseCode(403)
+                    .setResponseCode(404)
                     .addHeader("Content-Type", "text/html"));
 
             server.start();
@@ -188,10 +184,28 @@ final class AppTest {
             assertThat(checks).hasSize(1);
 
             var check = checks.getFirst();
-            assertThat(check.getStatusCode()).isEqualTo(403);
-            assertThat(check.getTitle()).isEqualTo("Just a moment...");
-            assertThat(check.getH1()).isEqualTo("");
-            assertThat(check.getDescription()).isEqualTo("");
+            assertThat(check.getStatusCode()).isEqualTo(404);
+            assertThat(check.getTitle()).isEmpty();
+            assertThat(check.getH1()).isEmpty();
+            assertThat(check.getDescription()).isEmpty();
         }
+    }
+
+    @Test
+    void testAfterServerShutdown() throws IOException, SQLException {
+        MockWebServer server = new MockWebServer();
+        server.enqueue(new MockResponse().setBody("Some content..."));
+
+        server.start();
+        String mockUrl = server.url("/").toString();
+
+        Unirest.post(baseUrl + NamedRoutes.urlsPath()).field("url", mockUrl).asEmpty();
+        var urlId = UrlRepository.getEntities().getFirst().getId();
+
+        server.shutdown();
+
+        Unirest.post(baseUrl + NamedRoutes.urlCheckPath(urlId)).asEmpty();
+        var checks = UrlCheckRepository.find(urlId);
+        assertThat(checks).hasSize(0);
     }
 }
