@@ -25,4 +25,8 @@ public class UrlCheckController {
         ctx.sessionAttribute("flashType", "success");
         ctx.redirect(NamedRoutes.urlPath(id));
     }
+
+    private UrlCheckController() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 }

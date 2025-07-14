@@ -11,6 +11,7 @@ val assertjVersion = "3.27.3"
 val logbackVersion = "1.4.11"
 val kongVersion = "3.14.5"
 val mockVersion = "4.12.0"
+val jsoupVersion = "1.17.2"
 
 plugins {
     id("java")
@@ -41,7 +42,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("com.konghq:unirest-java:$kongVersion")
-    implementation ("org.jsoup:jsoup:1.17.2")
+    implementation ("org.jsoup:jsoup:$jsoupVersion")
 
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation(platform("org.junit:junit-bom:5.12.2"))

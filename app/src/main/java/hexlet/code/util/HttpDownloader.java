@@ -12,7 +12,7 @@ public final class HttpDownloader {
         return new HttpResponseData(response.getStatus(), response.getBody());
     }
 
-    private HttpDownloader(String url) {
+    private HttpDownloader() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 }

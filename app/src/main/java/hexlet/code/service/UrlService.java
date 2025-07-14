@@ -1,9 +1,11 @@
 package hexlet.code.service;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class UrlService {
-    public static String createBaseUrl(String urlAddress) throws Exception {
+    public static String createBaseUrl(String urlAddress) throws URISyntaxException, MalformedURLException {
         var uri = new URI(urlAddress).normalize();
         var url = uri.toURL();
 
@@ -13,5 +15,9 @@ public class UrlService {
         return (port == -1)
                 ? String.format("%s://%s", protocol, host)
                 : String.format("%s://%s:%d", protocol, host, port);
+    }
+
+    private UrlService() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 }

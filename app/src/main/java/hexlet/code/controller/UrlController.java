@@ -2,8 +2,6 @@ package hexlet.code.controller;
 
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.service.UrlService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import hexlet.code.dto.UrlPage;
 import hexlet.code.dto.UrlsPage;
@@ -18,8 +16,6 @@ import java.sql.SQLException;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 public final class UrlController {
-    private static final Logger TAKE_LOG = LoggerFactory.getLogger(UrlController.class);
-
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
         var page = new UrlsPage(urls);

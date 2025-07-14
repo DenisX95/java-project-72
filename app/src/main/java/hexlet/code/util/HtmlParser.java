@@ -9,7 +9,7 @@ public final class HtmlParser {
         return Jsoup.parse(html);
     }
 
-    private HtmlParser(String url) {
+    private HtmlParser() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 }

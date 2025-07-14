@@ -19,7 +19,7 @@ import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public final class AppTest {
+final class AppTest {
 
     private static Javalin app;
     private static String baseUrl;

@@ -11,8 +11,15 @@ public final class UrlCheckService {
         var htmlPage = HtmlParser.parse(htmlData.body());
 
         var code = htmlData.statusCode();
-        var title = htmlPage.getElementsByTag("title").text();
-        var h1 = htmlPage.getElementsByTag("h1").text();
+        var title = htmlPage.title();
+
+
+        var h1Tag = htmlPage.selectFirst("h1");
+        var h1 = "";
+        if (h1Tag != null) {
+            h1 = h1Tag.text();  // безопасно
+        }
+
         var description = htmlPage.select("meta[name = description]").attr("content");
         var idUrl = url.getId();
 
@@ -21,7 +28,7 @@ public final class UrlCheckService {
                 title,
                 h1,
                 description,
-                url.getId()
+                idUrl
         );
     }
 
