@@ -15,7 +15,6 @@ public class Url {
 
     public Url(String name) {
         this.name = name;
-        this.createdAt = createdAt;
     }
 
     public Url(Long id, String name, LocalDateTime createdAt) {

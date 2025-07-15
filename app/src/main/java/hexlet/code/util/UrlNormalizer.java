@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class UrlNormalizer {
+public final class UrlNormalizer {
     public static String normalize(String url) throws URISyntaxException, MalformedURLException {
         var uri = new URI(url).normalize();
         var normilizedUrl = uri.normalize().toURL();
