@@ -1,18 +1,17 @@
 package hexlet.code.controller;
 
 import hexlet.code.repository.UrlCheckRepository;
-import hexlet.code.service.UrlService;
 
 import hexlet.code.dto.UrlPage;
 import hexlet.code.dto.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
+import hexlet.code.util.UrlNormalizer;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -27,36 +26,28 @@ public final class UrlController {
 
     public static void create(Context ctx) throws SQLException {
         var inputUrl  = ctx.formParam("url");
-
-        if (inputUrl == null || inputUrl.isBlank()) {
+        String parsedUrl;
+        try {
+            parsedUrl = UrlNormalizer.normalize(inputUrl);
+        } catch (Exception e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flashType", "danger");
             ctx.redirect(NamedRoutes.rootPath());
             return;
         }
 
-        try {
-            var baseUrl = UrlService.createBaseUrl(inputUrl);
+        if (UrlRepository.isExist(parsedUrl)) {
+            ctx.sessionAttribute("flash", "Страница уже существует");
+            ctx.sessionAttribute("flashType", "warning");
+            ctx.redirect(NamedRoutes.urlsPath());
 
-            if (UrlRepository.isExist(baseUrl)) {
-                ctx.sessionAttribute("flash", "Страница уже существует");
-                ctx.sessionAttribute("flashType", "warning");
-                ctx.redirect(NamedRoutes.urlsPath());
+        } else {
+            var newUrl = new Url(parsedUrl);
+            UrlRepository.save(newUrl);
 
-            } else {
-                var createdAt = LocalDateTime.now();
-                var newUrl = new Url(baseUrl, createdAt);
-                UrlRepository.save(newUrl);
-
-                ctx.sessionAttribute("flash", "Страница успешно добавлена");
-                ctx.sessionAttribute("flashType", "success");
-                ctx.redirect(NamedRoutes.urlsPath());
-            }
-
-        } catch (Exception e) {
-            ctx.sessionAttribute("flash", "Некорректный URL");
-            ctx.sessionAttribute("flashType", "danger");
-            ctx.redirect(NamedRoutes.rootPath());
+            ctx.sessionAttribute("flash", "Страница успешно добавлена");
+            ctx.sessionAttribute("flashType", "success");
+            ctx.redirect(NamedRoutes.urlsPath());
         }
     }
 

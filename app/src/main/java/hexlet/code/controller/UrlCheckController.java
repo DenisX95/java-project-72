@@ -1,5 +1,6 @@
 package hexlet.code.controller;
 
+import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.service.UrlCheckService;
@@ -16,11 +17,17 @@ public final class UrlCheckController {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
-
-        var check = UrlCheckService.createUrlCheck(url);
+        UrlCheck check;
+        try {
+            check = UrlCheckService.createUrlCheck(url);
+        } catch (Exception e) {
+            ctx.sessionAttribute("flash", "Ошибка при обращении к сайту: " + e.getMessage());
+            ctx.sessionAttribute("flashType", "danger");
+            ctx.redirect(NamedRoutes.urlPath(id));
+            return;
+        }
 
         UrlCheckRepository.save(check);
-
         ctx.sessionAttribute("flash", "Страница успешно проверена");
         ctx.sessionAttribute("flashType", "success");
         ctx.redirect(NamedRoutes.urlPath(id));

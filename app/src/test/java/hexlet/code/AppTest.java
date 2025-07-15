@@ -6,6 +6,7 @@ import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,8 @@ import kong.unirest.Unirest;
 import kong.unirest.HttpResponse;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,18 +124,8 @@ final class AppTest {
     @Test
     void checkUrlIsOK() throws Exception {
         try (MockWebServer server = new MockWebServer()) {
-            String mockHtml = """
-                    <html>
-                        <head>
-                            <title>Mock Page</title>
-                            <meta name="description" content="Mock description">
-                        </head>
-                        <body>
-                            <h1>Mock H1 title</h1>
-                            <div>Another Mock Contents</div>
-                        </body>
-                    </html>
-                    """;
+            InputStream input = getClass().getClassLoader().getResourceAsStream("mock/fullPage.html");
+            String mockHtml = new String(input.readAllBytes(), StandardCharsets.UTF_8);
 
             server.enqueue(new MockResponse()
                     .setBody(mockHtml)
@@ -165,7 +158,8 @@ final class AppTest {
     @Test
     void checkUrlIsNotFound() throws Exception {
         try (MockWebServer server = new MockWebServer()) {
-            String mockHtml = "<html><body>Not Found</body></html>";
+            InputStream input = getClass().getClassLoader().getResourceAsStream("mock/emptyPage.html");
+            String mockHtml = new String(input.readAllBytes(), StandardCharsets.UTF_8);
 
             server.enqueue(new MockResponse()
                     .setBody(mockHtml)
@@ -211,5 +205,8 @@ final class AppTest {
         Unirest.post(baseUrl + NamedRoutes.urlCheckPath(urlId)).asEmpty();
         var checks = UrlCheckRepository.find(urlId);
         assertThat(checks).hasSize(0);
+
+        HttpResponse<String> redirected = Unirest.get(baseUrl + NamedRoutes.urlPath(urlId)).asString();
+        assertThat(redirected.getBody()).contains("Ошибка при обращении к сайту");
     }
 }

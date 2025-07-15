@@ -14,10 +14,13 @@ public class UrlRepository extends BaseRepository {
     public static void save(Url url) throws SQLException {
         String sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
 
+        var createdAt = LocalDateTime.now();
+        url.setCreatedAt(createdAt);
+
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, url.getName());
-            preparedStatement.setTimestamp(2, Timestamp.valueOf(url.getCreatedAt()));
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(createdAt));
             preparedStatement.executeUpdate();
 
             var generatedKeys = preparedStatement.getGeneratedKeys();

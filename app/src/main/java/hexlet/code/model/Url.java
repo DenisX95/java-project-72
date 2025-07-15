@@ -13,7 +13,7 @@ public class Url {
     private LocalDateTime lastCheck;
     private Integer lastStatusCode;
 
-    public Url(String name, LocalDateTime createdAt) {
+    public Url(String name) {
         this.name = name;
         this.createdAt = createdAt;
     }

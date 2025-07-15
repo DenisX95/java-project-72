@@ -14,7 +14,6 @@ val mockVersion = "4.12.0"
 val jsoupVersion = "1.17.2"
 
 plugins {
-    id("java")
     id("application")
     id ("io.freefair.lombok") version "8.6"
     id("checkstyle")
