@@ -2,15 +2,16 @@ package hexlet.code.service;
 
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
-import hexlet.code.util.HtmlParser;
 import kong.unirest.Unirest;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 public final class UrlCheckService {
     public static UrlCheck createUrlCheck(Url url) {
         var response = Unirest.get(url.getName()).asString();
         var statusCode = response.getStatus();
         var body = response.getBody();
-        var htmlPage = HtmlParser.parse(body);
+        Document htmlPage = Jsoup.parse(body);
         var title = htmlPage.title();
 
         var h1Tag = htmlPage.selectFirst("h1");

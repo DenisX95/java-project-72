@@ -18,6 +18,7 @@ public final class UrlCheckController {
         var url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
         UrlCheck check;
+
         try {
             check = UrlCheckService.createUrlCheck(url);
         } catch (Exception e) {

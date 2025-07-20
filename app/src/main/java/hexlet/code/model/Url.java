@@ -17,16 +17,8 @@ public class Url {
         this.name = name;
     }
 
-    public Url(Long id, String name, LocalDateTime createdAt) {
+    public Url(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.createdAt = createdAt;
-    }
-
-    public Url(Long id, String name, LocalDateTime lastCheck, Integer lastStatusCode) {
-        this.id = id;
-        this.name = name;
-        this.lastCheck = lastCheck;
-        this.lastStatusCode = lastStatusCode;
     }
 }

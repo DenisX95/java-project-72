@@ -44,7 +44,8 @@ public class UrlRepository extends BaseRepository {
                 var name = resultSet.getString("name");
                 var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
 
-                var url = new Url(id, name, createdAt);
+                var url = new Url(id, name);
+                url.setCreatedAt(createdAt);
                 return Optional.of(url);
             }
             return Optional.empty();
@@ -84,10 +85,11 @@ public class UrlRepository extends BaseRepository {
 
                 Timestamp lastCheckRaw = resultSet.getTimestamp("last_check");
                 LocalDateTime lastCheck = lastCheckRaw != null ? lastCheckRaw.toLocalDateTime() : null;
-
                 var lastStatusCode = resultSet.getObject("last_status_code", Integer.class);
 
-                var url = new Url(id, name, lastCheck, lastStatusCode);
+                var url = new Url(id, name);
+                url.setLastCheck(lastCheck);
+                url.setLastStatusCode(lastStatusCode);
                 result.add(url);
             }
             return result;
