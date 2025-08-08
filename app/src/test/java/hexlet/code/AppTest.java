@@ -207,6 +207,6 @@ final class AppTest {
         assertThat(checks).hasSize(0);
 
         HttpResponse<String> redirected = Unirest.get(baseUrl + NamedRoutes.urlPath(urlId)).asString();
-        assertThat(redirected.getBody()).contains("Ошибка при обращении к сайту");
+        assertThat(redirected.getBody()).contains("Некорректный адрес");
     }
 }

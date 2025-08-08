@@ -6,9 +6,7 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.service.UrlCheckService;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
-
 import io.javalin.http.NotFoundResponse;
-
 import java.sql.SQLException;
 
 public final class UrlCheckController {
@@ -22,7 +20,7 @@ public final class UrlCheckController {
         try {
             check = UrlCheckService.createUrlCheck(url);
         } catch (Exception e) {
-            ctx.sessionAttribute("flash", "Ошибка при обращении к сайту: " + e.getMessage());
+            ctx.sessionAttribute("flash", "Некорректный адрес");
             ctx.sessionAttribute("flashType", "danger");
             ctx.redirect(NamedRoutes.urlPath(id));
             return;

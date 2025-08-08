@@ -60,7 +60,6 @@ public class App {
 
         BaseRepository.dataSource = dataSource;
 
-        // Настройка приложения
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));

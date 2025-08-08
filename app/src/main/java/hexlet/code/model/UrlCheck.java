@@ -23,12 +23,11 @@ public class UrlCheck {
         this.urlId = urlId;
     }
 
-    public UrlCheck(Long id, Integer statusCode, String title, String h1, String description, LocalDateTime createdAt) {
+    public UrlCheck(Long id, Integer statusCode, String title, String h1, String description) {
         this.id = id;
         this.statusCode = statusCode;
         this.title = title;
         this.h1 = h1;
         this.description = description;
-        this.createdAt = createdAt;
     }
 }

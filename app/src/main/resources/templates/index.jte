@@ -4,7 +4,7 @@
 @template.layout.page(
 page = page,
 content = @`
-    <section class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <section class="d-flex align-items-center justify-content-center flex-grow-1 bg-light py-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-6 text-center bg-white p-5 rounded-4 shadow">
