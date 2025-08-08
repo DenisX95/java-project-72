@@ -32,7 +32,7 @@
         </nav>
     <main class="flex-grow-1">
         @if(page != null && page.getFlash() != null)
-            <div class="position-fixed top-0 start-0 w-100 z-3">
+            <div class="position-sticky top-0 z-3 w-100">
                 <div class="alert alert-dismissible fade show alert-${page.getFlashType()} rounded-3 mx-auto py-3 w-100 w-md-75" role="alert">
                     <p class="m-0">${page.getFlash()}</p>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
